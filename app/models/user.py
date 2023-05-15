@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID as P_UUID
 from uuid import UUID, uuid4
 
 from app.models.base import Base, TimestampMixin
-from app.models.enums import Gender
+from app.constants.gender import Gender
 
 if TYPE_CHECKING:
     from app.models.petition import Petition
@@ -17,16 +17,15 @@ class User(TimestampMixin, Base):
     __tablename__ = "users"
 
     id: Mapped[UUID] = mapped_column(P_UUID(as_uuid=True), default=uuid4, primary_key=True)
-    username: Mapped[str] = mapped_column(String(32))
-    first_name: Mapped[str] = mapped_column(String(64))
-    last_name: Mapped[str] = mapped_column(String(64))
+    first_name: Mapped[str]
+    last_name: Mapped[str]
+    email: Mapped[str] = mapped_column(unique=True)
     gender: Mapped[Gender]
-    email: Mapped[str] = mapped_column(String(64))
-    password: Mapped[str] = mapped_column(String(256))
+    password: Mapped[str]
 
     petitions: Mapped[List["Petition"]] = relationship(back_populates="user")
     votes: Mapped[List["Vote"]] = relationship(back_populates="user")
 
     @property
-    def full_name(self):
+    def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
