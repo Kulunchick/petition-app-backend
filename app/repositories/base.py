@@ -1,64 +1,63 @@
-from abc import ABC, abstractmethod
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Sequence, Optional, Type, Any
 from uuid import UUID
 
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, func, ColumnElement
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.base import ExecutableOption
 
-T = TypeVar('T')
+from app.models import Base
 
-
-class IBaseRepository(ABC):
-    @property
-    def __model__(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    async def create(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    async def get_all(self):
-        raise NotImplementedError
-
-    @abstractmethod
-    async def get_by_id(self, model_id: UUID):
-        raise NotImplementedError
-
-    @abstractmethod
-    async def update(self, model_id: UUID, **kwargs):
-        raise NotImplementedError
-
-    @abstractmethod
-    async def delete(self, model_id: UUID):
-        raise NotImplementedError
+T = TypeVar('T', bound=Base)
 
 
-class BaseRepository(IBaseRepository, Generic[T]):
-    __model__: T
+class BaseRepository(Generic[T]):
+    __model__: Type[T]
 
     def __init__(self, session: AsyncSession):
-        self.__session = session
+        self._session = session
 
-    async def create(self, **kwargs):
-        model = self.__model__(**kwargs)
-        self.__session.add(model)
+    async def get_count(self) -> Optional[int]:
+        query = select(func.count()).select_from(self.__model__)
+        return await self._session.scalar(query)
+
+    async def create(self, model: T) -> T:
+        self._session.add(model)
         return model
 
-    async def get_all(self):
+    async def get(
+            self,
+            limit: Optional[int] = None,
+            offset: Optional[int] = None,
+            options: Optional[Sequence[ExecutableOption]] = None,
+            order: Optional[Sequence[ColumnElement]] = None
+    ) -> Sequence[T]:
         query = select(self.__model__)
-        return (await self.__session.scalars(query)).all()
 
-    async def get_by_id(self, model_id: UUID):
-        return self.__session.get(self.__model__, model_id)
+        if limit is not None:
+            query = query.limit(limit)
+        if offset is not None:
+            query = query.offset(offset)
+        if options is not None:
+            query = query.options(*options)
+        if order is not None:
+            query = query.order_by(*order)
 
-    async def update(self, model_id: UUID, **kwargs):
-        query = update(self.__model__)\
-            .where(self.__model__.id == model_id)\
-            .values(**kwargs)\
+        return (await self._session.scalars(query)).all()
+
+    async def get_by_id(
+            self,
+            model_id: UUID,
+            options: Optional[Sequence[ExecutableOption]] = None
+    ) -> Optional[T]:
+        return await self._session.get(self.__model__, model_id, options=options)
+
+    async def update(self, model_id: UUID, **kwargs: Any) -> None:
+        query = update(self.__model__) \
+            .where(self.__model__.id == model_id) \
+            .values(**kwargs) \
             .execution_options(synchronize_session="evaluate")
-        return await self.__session.execute(query)
+        await self._session.execute(query)
 
-    async def delete(self, model_id: UUID):
+    async def delete(self, model_id: UUID) -> None:
         query = delete(self.__model__).where(self.__model__.id == model_id)
-        return await self.__session.execute(query)
+        await self._session.execute(query)
