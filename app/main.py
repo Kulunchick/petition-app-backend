@@ -1,3 +1,5 @@
+from typing import Dict
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -13,6 +15,7 @@ app.add_middleware(
 )
 settings = Settings()
 
+
 @app.get("/")
-async def root():
+async def root() -> Dict[str, str]:
     return {"message": "Hello World"}
