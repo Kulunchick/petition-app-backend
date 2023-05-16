@@ -3,6 +3,7 @@ from typing import Dict
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app import routes
 from app.config import Settings
 
 app = FastAPI()
@@ -14,6 +15,8 @@ app.add_middleware(
     allow_headers=["*"]
 )
 settings = Settings()
+
+app.include_router(routes.router)
 
 
 @app.get("/")
