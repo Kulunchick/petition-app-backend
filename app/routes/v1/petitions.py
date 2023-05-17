@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.constants.positive_int import PositiveInt
-from app.core.security import get_user
+from app.types.positive_int import PositiveInt
+from app.security.security import get_user
 from app.database import get_session
 from app.models import User, Petition
 from app.repositories.petition import PetitionRepository

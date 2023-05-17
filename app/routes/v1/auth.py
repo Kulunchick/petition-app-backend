@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
 
-from app.core.hashing import Hasher
-from app.core.security import JWTRepo
+from app.security.hashing import Hasher
+from app.security.security import JWTRepo
 from app.database import get_session
 from app.models import User
 from app.repositories.user import UserRepository, UserFilter

@@ -5,8 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.constants.positive_int import PositiveInt
-from app.core.security import get_user
+from app.types.positive_int import PositiveInt
+from app.security.security import get_user
 from app.database import get_session
 from app.models import User, Vote, Petition
 from app.repositories.petition import PetitionRepository
@@ -31,7 +31,7 @@ async def get_votes(petition_id: UUID, page: PositiveInt = 1, page_limit: Positi
     if count is None:
         raise HTTPException(status_code=500, detail="Error")
 
-    pages_count = math.ceil(count / page_limit)
+    pages_count = math.ceil(count / page_limit) or 1
     if pages_count < page:
         raise HTTPException(status_code=404, detail="Not found")
 

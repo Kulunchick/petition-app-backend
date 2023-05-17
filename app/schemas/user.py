@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, constr
 
-from app.constants.gender import Gender
+from app.types.gender import Gender
 
 
 class UserData(BaseModel):

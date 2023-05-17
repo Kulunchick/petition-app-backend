@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID as P_UUID
 from uuid import UUID, uuid4
 
 from app.models.base import Base, TimestampMixin
-from app.constants.gender import Gender
+from app.types.gender import Gender
 
 if TYPE_CHECKING:
     from app.models.petition import Petition
