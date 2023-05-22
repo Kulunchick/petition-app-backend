@@ -21,4 +21,4 @@ app.include_router(routes.router)
 
 @app.get("/")
 async def root() -> Dict[str, str]:
-    return {"message": "Hello World"}
+    return {"status": "OK"}

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Any
 from uuid import UUID
 
 from pydantic import BaseModel, constr
@@ -27,6 +27,10 @@ class PetitionData(BaseModel):
 
     class Config:
         orm_mode = True
+
+    def dict(self, *args, **kwargs) -> dict[str, Any]:
+        kwargs.pop('exclude_none', None)
+        return super().dict(*args, exclude_none=True, **kwargs)
 
 
 class PetitionsPage(BaseModel):

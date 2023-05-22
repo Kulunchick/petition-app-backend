@@ -17,19 +17,6 @@ class UserData(BaseModel):
         orm_mode = True
 
 
-class UserRegister(BaseModel):
-    first_name: constr(min_length=1, max_length=48, strip_whitespace=True)  # type: ignore
-    last_name: constr(min_length=1, max_length=48, strip_whitespace=True)  # type: ignore
-    email: EmailStr
-    gender: Gender
-    password: constr(min_length=8, max_length=24)  # type: ignore
-
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: constr(min_length=8, max_length=24)  # type: ignore
-
-
 class UsersPage(BaseModel):
     current_page: int
     pages_count: int
