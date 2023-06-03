@@ -5,15 +5,11 @@ from uuid import UUID
 
 from authlib.jose import jwt
 from authlib.jose.errors import DecodeError
-from fastapi import Request, HTTPException, Depends
+from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel, validator
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.database import get_session
-from app.models import User
-from app.repositories.user import UserRepository
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 7 * 60 * 60  # 7 days
 ALGORITHM = "HS256"
@@ -24,7 +20,7 @@ class TokenData(BaseModel):
     exp: datetime
 
     @validator("sub")
-    def validate_uuids(cls, value):
+    def validate_uuids(cls, value: Union[UUID, str]) -> Union[UUID, str]:
         if value:
             return str(value)
         return value

@@ -1,12 +1,10 @@
-from uuid import UUID, uuid4
 from typing import TYPE_CHECKING
+from uuid import UUID
 
 from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
-
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID as P_UUID
 
 if TYPE_CHECKING:
     from app.models.user import User
@@ -15,8 +13,6 @@ if TYPE_CHECKING:
 
 class Vote(TimestampMixin, Base):
     __tablename__ = "votes"
-
-    id: Mapped[UUID] = mapped_column(P_UUID(as_uuid=True), default=uuid4, primary_key=True)
 
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     user: Mapped["User"] = relationship(back_populates="votes")

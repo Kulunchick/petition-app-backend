@@ -19,8 +19,8 @@ class UpdatePetition(BaseModel):
 
 class PetitionData(BaseModel):
     id: UUID
-    title: constr(min_length=1, strip_whitespace=True)
-    description: constr(min_length=1, strip_whitespace=True)
+    title: constr(min_length=1, strip_whitespace=True)  # type: ignore
+    description: constr(min_length=1, strip_whitespace=True)  # type: ignore
     created_at: datetime
     votes_count: Optional[int]
     user: UserData
@@ -28,7 +28,7 @@ class PetitionData(BaseModel):
     class Config:
         orm_mode = True
 
-    def dict(self, *args, **kwargs) -> dict[str, Any]:
+    def dict(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         kwargs.pop('exclude_none', None)
         return super().dict(*args, exclude_none=True, **kwargs)
 

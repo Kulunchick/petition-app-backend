@@ -12,7 +12,7 @@ router.include_router(votes.router)
 
 
 @router.get("/")
-async def get_api():
+async def get_api() -> JSONResponse:
     return JSONResponse(
         status_code=200,
         content={

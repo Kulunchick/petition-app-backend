@@ -25,7 +25,7 @@ class PetitionsController:
     session: AsyncSession = Depends(get_session)
 
     @router.get("/")
-    async def get_petitions(self, page: PositiveInt = 1, page_limit: PositiveInt = 50,) -> PetitionsPage:
+    async def get_petitions(self, page: PositiveInt = 1, page_limit: PositiveInt = 50) -> PetitionsPage:
         petition_repository = PetitionRepository(self.session)
 
         count = await petition_repository.get_count()
@@ -58,14 +58,14 @@ class PetitionsController:
         return response
 
     @router.get("/{petition_id}")
-    async def get_petition(self, petition_id: UUID):
+    async def get_petition(self, petition_id: UUID) -> PetitionData:
         petition_repository = PetitionRepository(self.session)
         petition = await petition_repository.get_by_id(
             petition_id,
             [selectinload(Petition.user)]
         )
         if petition is None:
-            return HTTPException(status_code=404, detail="Not found")
+            raise HTTPException(status_code=404, detail="Not found")
 
         response = PetitionData.from_orm(petition)
 

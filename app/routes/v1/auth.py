@@ -41,7 +41,7 @@ class AuthController:
         )
 
     @router.post("/register")
-    async def register(self, credentials: UserRegister):
+    async def register(self, credentials: UserRegister) -> JSONResponse:
         user_repository = UserRepository(self.session)
         user = await user_repository.find_one(UserFilter(email=credentials.email))
         if user is not None:

@@ -1,8 +1,7 @@
 from typing import List, TYPE_CHECKING
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from sqlalchemy import ForeignKey
-from sqlalchemy.dialects.postgresql import UUID as P_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
@@ -15,7 +14,6 @@ if TYPE_CHECKING:
 class Petition(TimestampMixin, Base):
     __tablename__ = "petitions"
 
-    id: Mapped[UUID] = mapped_column(P_UUID(as_uuid=True), default=uuid4, primary_key=True)
     title: Mapped[str]
     description: Mapped[str]
 

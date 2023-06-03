@@ -78,7 +78,7 @@ class VotesController:
         return VoteData.from_orm(vote)
 
     @router.get("/petitions/{petition_id}/check")
-    async def check(self, petition_id: UUID, user: User = Depends(get_user)):
+    async def check(self, petition_id: UUID, user: User = Depends(get_user)) -> CheckVote:
         petition_repository = PetitionRepository(self.session)
         petition = await petition_repository.get_by_id(petition_id)
         if petition is None:
